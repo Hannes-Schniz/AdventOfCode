@@ -1,19 +1,23 @@
+import os
+dirname = os.path.dirname(__file__)
+file_path = os.path.join(dirname, 'input_01-12-23.txt')
 
-file_path = "input_01-12-23.txt"
 result = 0
+
+NaN = -1
 
 # Part One
 
 with open(file_path, "r") as file:
     line = file.readline()
     while line:
-        firstValue = 0
+        firstValue = NaN
         secondValue = 0
         for c in line:
-            if c.isnumeric() and firstValue == 0:
-                firstValue += int(c)
             if c.isnumeric():
                 secondValue = int(c)
+                if firstValue == NaN:
+                    firstValue = secondValue
         result += firstValue * 10 + secondValue
         line = file.readline()        
 
@@ -41,7 +45,7 @@ def isNumber(input):
         return True
     return False
 
-def getNumber():
+def getNumber(c, idx):
     fourLetters = line[idx:idx+4:1]
     threeLetters = line[idx:idx+3:1]
     fiveLetters = line[idx:idx+5:1]
@@ -53,25 +57,29 @@ def getNumber():
         return spelledNumersAsKeys[fourLetters]
     if isNumber(fiveLetters):
         return spelledNumersAsKeys[fiveLetters]
-    return -1
+    return NaN
+
+def checkLine():
+    firstValue = NaN
+    secondValue = 0
+    idx = 0
+    for c in line:
+        number = getNumber(c, idx)
+        if number == NaN:
+            idx = idx + 1
+            continue
+        secondValue = number
+        if firstValue == NaN:
+            firstValue = secondValue
+        idx = idx + 1
+    return firstValue, secondValue
+    
 
 with open(file_path, "r") as file:
     line = file.readline()
     while line:
-        firstValue = -1
-        secondValue = 0
-        idx = 0
-        for c in line:
-            number = getNumber()
-            if number > -1:
-                secondValue = number
-                if firstValue == -1:
-                    firstValue = secondValue
-            idx = idx + 1
-        result += firstValue * 10 + secondValue
+        values = checkLine()
+        result += values[0] * 10 + values[1]
         line = file.readline()
         
 print ("Part Two: " + str(result))
-
-
-
