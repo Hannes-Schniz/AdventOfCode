@@ -100,8 +100,7 @@ with open(file_path, "r") as file:
         for run in runs:
             draws = run.split(",")
             parsedDraws = splitDraw(draws)
-            runResults.append(minDraws(parsedDraws))
-        print (compareRuns(runResults))  
+            runResults.append(minDraws(parsedDraws)) 
         result += calcResults(compareRuns(runResults))          
         game += 1
         line = file.readline()
