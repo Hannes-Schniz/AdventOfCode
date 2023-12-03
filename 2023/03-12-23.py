@@ -2,6 +2,15 @@ import os
 dirname = os.path.dirname(__file__)
 file_path = os.path.join(dirname, 'input_03-12-23.txt')
 
+results = [[],[],[]]
+
+# results= []
+# length = 104
+# while length > 0:
+#     results.append([])
+#     length -= 1
+
+
 def getNumber(line, idx):
     result = ""
     numberIDX = idx
@@ -21,12 +30,12 @@ def getNumber(line, idx):
     
 
 
-def analyseSurround(lines, idx):
+def analyseSurround(lines, idx, currLine):
     # [., ., .] -1/-1 0/-1 1/-1
     # [., x, .] -1/0 0/0 1/0
     # [., ., .] -1/1 0/1 1/1
     
-    results =[]
+    
     
     startIDX = idx - 1
     endIDX = idx + 1
@@ -41,7 +50,7 @@ def analyseSurround(lines, idx):
     # print(lines[2][startIDX], lines[2][idx], lines[2][endIDX])
     # print()
     
-        
+    lineDelta = -1
     
     for line in lines:
         if line == "":
@@ -49,28 +58,37 @@ def analyseSurround(lines, idx):
         for i in range(startIDX, endIDX +1):
             if line[i].isnumeric():
                 number = getNumber(line, i)
-                if results.__contains__(number) == False:
-                    results.append(number)
+                if results[currLine + lineDelta - 1].__contains__(number) == False:
+                    results[currLine + lineDelta - 1].append(number)
+        lineDelta += 1
         
-    return results
+def sumResults():
+    result = 0
+    for line in results:
+        for number in line:
+            result += number
+    return result
+ 
 idx = 0
 lines = ["", "", ""]
-results = []
 
 with open(file_path, "r") as file:
     while idx < 3:
         # gets previous, curr and next line
         if idx != 0:
             lines[1]= lines[2]
+            results.append([])
         lines[2] = file.readline()
         
         # gets the special char
         currPos = 0
         for c in lines[1]:
             if c.isnumeric() == False and c != '.' and c != "\n":
-                results.append(analyseSurround(lines, currPos)) 
+                analyseSurround(lines, currPos, idx)
             currPos += 1
         
         lines[0] = lines[1]
         idx += 1
-    print(results)
+        
+        
+    print(sumResults())
