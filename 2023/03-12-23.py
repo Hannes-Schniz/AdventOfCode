@@ -1,15 +1,59 @@
 import os
-dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_03-12-23.txt')
 
+#-------------------------------------------------------------------------
+#                               Part 1
+#-------------------------------------------------------------------------
 results = []
 
-# results= []
-# length = 104
-# while length > 0:
-#     results.append([])
-#     length -= 1
+def fillInResult(line, x, y):
+    if line[x].isnumeric():
+        number = getNumber(line, x, y)
+        if checkIfContains(results, number) == False:
+            results.append(number)  
+            
+def sumResults():
+    calcResult = 0
+    for result in results:
+        calcResult += result.symbol
+    return calcResult  
 
+#-------------------------------------------------------------------------
+#                               Part 2
+#-------------------------------------------------------------------------
+
+gears= {}
+
+maxValues = 2
+
+currKey=''
+
+class Gear:
+    def __init__(self, x, y):
+        self.x = x
+        self.y = y
+
+def fillInGear(line, x, y):
+    if line[x].isnumeric():
+        number = getNumber(line, x, y)
+        if checkIfContains(gears[currKey], number) == False:
+            gears[currKey].append(number) 
+    
+        
+def sumGears():
+    result = 0
+    for key in gears.keys():
+        gearRatio = 1
+        for value in gears[key]:
+            gearRatio = gearRatio * value.symbol
+        result += gearRatio
+    return result
+
+#-------------------------------------------------------------------------
+#                                General
+#-------------------------------------------------------------------------
+
+dirname = os.path.dirname(__file__)
+file_path = os.path.join(dirname, 'input_03-12-23.txt')
 
 class Key:
     def __init__(self, symbol, x, y):
@@ -20,9 +64,9 @@ class Key:
         if self.symbol == input.symbol and self.x == input.x and self.y == input.y:
             return True
 
-def checkIfContains(input):
-    for result in results:
-        if result.eql(input):
+def checkIfContains(list, input):
+    for value in list:
+        if value.eql(input):
             return True
     return False
 
@@ -34,8 +78,6 @@ def getNumber(line, idx, currLine):
     while line[idx].isnumeric() == True:
         idx -=1
     idx += 1
-    start = idx
-    
     #builds the number
     while line[idx].isnumeric() == True:
         result += line[idx]
@@ -43,11 +85,10 @@ def getNumber(line, idx, currLine):
         if idx >= len(line):
             break
         
-    return Key(int(result), start, currLine)
-    
+    return Key(int(result), idx, currLine)
 
 #draws a box around the target symbol and searches for digits
-def analyseSurround(lines, idx, currLine):
+def analyseSurround(lines, idx, currLine, fillMethode):
     # [., ., .] -1/-1 0/-1 1/-1
     # [., x, .] -1/0 0/0 1/0
     # [., ., .] -1/1 0/1 1/1
@@ -72,25 +113,14 @@ def analyseSurround(lines, idx, currLine):
     
     for line in lines:
         for i in range(startIDX, endIDX + 1):
-            if line[i].isnumeric():
-                number = getNumber(line, i, (currLine + lineDelta))
-                if checkIfContains(number) == False:
-                    results.append(number)                
+            fillMethode(line, i,(currLine + lineDelta))             
         lineDelta += 1
-
-def sumResults():
-    calcResult = 0
-    for result in results:
-        calcResult += result.symbol
-    return calcResult
- 
-
 
 with open(file_path, "r") as file:
     idx = 0
-    lines = ["", "", ""]
+    lines = [".", ".", "."]
     
-    while idx < 141:
+    while lines[2]:
         # gets previous, curr and next line
         if idx != 0:
             lines[1]= lines[2]
@@ -102,9 +132,16 @@ with open(file_path, "r") as file:
         # gets the special char
         for c in lines[1]:
             if c.isnumeric() == False and c != '.' and c != "\n":
-                analyseSurround(lines, currPos, idx)
+                analyseSurround(lines, currPos, idx, fillInResult)
+            if c == "*":
+                currKey = Gear(currPos, idx)
+                gears[currKey] = []
+                analyseSurround(lines, currPos, idx, fillInGear)
+                if len(gears[currKey]) != maxValues :
+                    gears.pop(currKey)
             currPos += 1
         
         lines[0] = lines[1]
         idx += 1
     print("Part 1: " + str(sumResults()))
+    print("Part 2: " + str(sumGears()))
