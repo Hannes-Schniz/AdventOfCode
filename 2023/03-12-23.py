@@ -26,32 +26,34 @@ def checkIfContains(input):
             return True
     return False
 
+#gets the full number and returns the number as a unique object
 def getNumber(line, idx, currLine):
     result = ""
-    numberIDX = idx
 
     #get start of the number
-    while line[numberIDX].isnumeric() == True:
-        numberIDX -=1
-    numberIDX += 1
-    start = numberIDX
-    while line[numberIDX].isnumeric() == True:
-        result += line[numberIDX]
-        numberIDX += 1
-        if numberIDX >= len(line):
+    while line[idx].isnumeric() == True:
+        idx -=1
+    idx += 1
+    start = idx
+    
+    #builds the number
+    while line[idx].isnumeric() == True:
+        result += line[idx]
+        idx += 1
+        if idx >= len(line):
             break
         
     return Key(int(result), start, currLine)
     
 
-
+#draws a box around the target symbol and searches for digits
 def analyseSurround(lines, idx, currLine):
     # [., ., .] -1/-1 0/-1 1/-1
     # [., x, .] -1/0 0/0 1/0
     # [., ., .] -1/1 0/1 1/1
     
     
-    
+    # gets the top left and bottom right corner of the 3x3 square
     startIDX = idx - 1
     endIDX = idx + 1
     
@@ -65,25 +67,16 @@ def analyseSurround(lines, idx, currLine):
     # print(lines[2][startIDX], lines[2][idx], lines[2][endIDX])
     # print()
     
+    #current line relative to the symbol line
     lineDelta = -1
     
     for line in lines:
-        if line == "":
-                continue
         for i in range(startIDX, endIDX + 1):
             if line[i].isnumeric():
                 number = getNumber(line, i, (currLine + lineDelta))
                 if checkIfContains(number) == False:
-                    results.append(number)
-                
+                    results.append(number)                
         lineDelta += 1
-        
-def sumResultsMap():
-    result = 0
-    for key in resultsMap.keys():
-        for value in resultsMap[key]:
-            result += value
-    return result
 
 def sumResults():
     calcResult = 0
@@ -91,18 +84,22 @@ def sumResults():
         calcResult += result.symbol
     return calcResult
  
-idx = 0
-lines = ["", "", ""]
+
 
 with open(file_path, "r") as file:
+    idx = 0
+    lines = ["", "", ""]
+    
     while idx < 141:
         # gets previous, curr and next line
         if idx != 0:
             lines[1]= lines[2]
         lines[2] = file.readline()
         
-        # gets the special char
+        #Current x value
         currPos = 0
+        
+        # gets the special char
         for c in lines[1]:
             if c.isnumeric() == False and c != '.' and c != "\n":
                 analyseSurround(lines, currPos, idx)
@@ -110,4 +107,4 @@ with open(file_path, "r") as file:
         
         lines[0] = lines[1]
         idx += 1
-    print(sumResults())
+    print("Part 1: " + str(sumResults()))
