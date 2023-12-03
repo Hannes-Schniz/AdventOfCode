@@ -1,8 +1,8 @@
 import os
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_03-12-23.txt')
+file_path = os.path.join(dirname, 'input_03-12-23-test.txt')
 
-results = [[],[],[]]
+resultsMap = {}
 
 # results= []
 # length = 104
@@ -11,6 +11,12 @@ results = [[],[],[]]
 #     length -= 1
 
 
+class Key:
+    def __init__(self, symbol, x, y):
+        self.symbol = symbol
+        self.x = x
+        self.y = y
+
 def getNumber(line, idx):
     result = ""
     numberIDX = idx
@@ -18,8 +24,6 @@ def getNumber(line, idx):
     #get start of the number
     while line[numberIDX].isnumeric() == True:
         numberIDX -=1
-        if numberIDX <= 0:
-            break
     numberIDX += 1
     while line[numberIDX].isnumeric() == True:
         result += line[numberIDX]
@@ -30,7 +34,7 @@ def getNumber(line, idx):
     
 
 
-def analyseSurround(lines, idx, currLine):
+def analyseSurround(lines, idx, currLine, key):
     # [., ., .] -1/-1 0/-1 1/-1
     # [., x, .] -1/0 0/0 1/0
     # [., ., .] -1/1 0/1 1/1
@@ -55,40 +59,41 @@ def analyseSurround(lines, idx, currLine):
     for line in lines:
         if line == "":
                 continue
-        for i in range(startIDX, endIDX +1):
+        for i in range(startIDX, endIDX):
             if line[i].isnumeric():
                 number = getNumber(line, i)
-                if results[currLine + lineDelta - 1].__contains__(number) == False:
-                    results[currLine + lineDelta - 1].append(number)
+                if resultsMap[key].__contains__(number) == False:
+                    resultsMap[key].append(number)
         lineDelta += 1
         
-def sumResults():
+def sumResultsMap():
     result = 0
-    for line in results:
-        for number in line:
-            result += number
+    for key in resultsMap.keys():
+        for value in resultsMap[key]:
+            result += value
     return result
  
 idx = 0
 lines = ["", "", ""]
 
 with open(file_path, "r") as file:
-    while idx < 3:
+    while idx < 141:
         # gets previous, curr and next line
         if idx != 0:
             lines[1]= lines[2]
-            results.append([])
         lines[2] = file.readline()
         
         # gets the special char
         currPos = 0
         for c in lines[1]:
             if c.isnumeric() == False and c != '.' and c != "\n":
-                analyseSurround(lines, currPos, idx)
+                key = Key(c, currPos, idx)
+                resultsMap[key] = []
+                analyseSurround(lines, currPos, idx, key)
             currPos += 1
         
         lines[0] = lines[1]
         idx += 1
         
-        
-    print(sumResults())
+    print(resultsMap.values())    
+    print(sumResultsMap())
