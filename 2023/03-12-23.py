@@ -1,8 +1,10 @@
 import os
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_03-12-23-test.txt')
+file_path = os.path.join(dirname, 'input_03-12-23.txt')
 
 resultsMap = {}
+
+results = []
 
 # results= []
 # length = 104
@@ -17,7 +19,13 @@ class Key:
         self.x = x
         self.y = y
 
-def getNumber(line, idx):
+def checkIfContains(input):
+    for result in results:
+        if result.symbol == input.symbol and result.x == input.x and result.y == input.y:
+            return True
+    return False
+
+def getNumber(line, idx, currLine):
     result = ""
     numberIDX = idx
 
@@ -25,12 +33,14 @@ def getNumber(line, idx):
     while line[numberIDX].isnumeric() == True:
         numberIDX -=1
     numberIDX += 1
+    end = numberIDX
     while line[numberIDX].isnumeric() == True:
         result += line[numberIDX]
         numberIDX += 1
         if numberIDX >= len(line):
             break
-    return int(result)
+        
+    return Key(int(result), end, currLine)
     
 
 
@@ -47,7 +57,7 @@ def analyseSurround(lines, idx, currLine, key):
     if startIDX < 0:
         startIDX = 0
     if endIDX >= len(lines[1]):
-        endIDX = len(lines[1]) -1
+        endIDX = len(lines[1]) - 1
         
     # print(lines[0][startIDX], lines[0][idx], lines[0][endIDX])
     # print(lines[1][startIDX], lines[1][idx], lines[1][endIDX])
@@ -59,11 +69,14 @@ def analyseSurround(lines, idx, currLine, key):
     for line in lines:
         if line == "":
                 continue
-        for i in range(startIDX, endIDX):
+        for i in range(startIDX, endIDX + 1):
             if line[i].isnumeric():
-                number = getNumber(line, i)
+                number = getNumber(line, i, (currLine + lineDelta))
                 if resultsMap[key].__contains__(number) == False:
-                    resultsMap[key].append(number)
+                    resultsMap[key].append(number.symbol)
+                if checkIfContains(number) == False:
+                    results.append(number)
+                
         lineDelta += 1
         
 def sumResultsMap():
@@ -72,6 +85,12 @@ def sumResultsMap():
         for value in resultsMap[key]:
             result += value
     return result
+
+def sumResults():
+    calcResult = 0
+    for result in results:
+        calcResult += result.symbol
+    return calcResult
  
 idx = 0
 lines = ["", "", ""]
@@ -97,3 +116,4 @@ with open(file_path, "r") as file:
         
     print(resultsMap.values())    
     print(sumResultsMap())
+    print(sumResults())
