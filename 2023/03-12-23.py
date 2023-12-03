@@ -2,8 +2,6 @@ import os
 dirname = os.path.dirname(__file__)
 file_path = os.path.join(dirname, 'input_03-12-23.txt')
 
-resultsMap = {}
-
 results = []
 
 # results= []
@@ -18,10 +16,13 @@ class Key:
         self.symbol = symbol
         self.x = x
         self.y = y
+    def eql(self, input):
+        if self.symbol == input.symbol and self.x == input.x and self.y == input.y:
+            return True
 
 def checkIfContains(input):
     for result in results:
-        if result.symbol == input.symbol and result.x == input.x and result.y == input.y:
+        if result.eql(input):
             return True
     return False
 
@@ -33,18 +34,18 @@ def getNumber(line, idx, currLine):
     while line[numberIDX].isnumeric() == True:
         numberIDX -=1
     numberIDX += 1
-    end = numberIDX
+    start = numberIDX
     while line[numberIDX].isnumeric() == True:
         result += line[numberIDX]
         numberIDX += 1
         if numberIDX >= len(line):
             break
         
-    return Key(int(result), end, currLine)
+    return Key(int(result), start, currLine)
     
 
 
-def analyseSurround(lines, idx, currLine, key):
+def analyseSurround(lines, idx, currLine):
     # [., ., .] -1/-1 0/-1 1/-1
     # [., x, .] -1/0 0/0 1/0
     # [., ., .] -1/1 0/1 1/1
@@ -72,8 +73,6 @@ def analyseSurround(lines, idx, currLine, key):
         for i in range(startIDX, endIDX + 1):
             if line[i].isnumeric():
                 number = getNumber(line, i, (currLine + lineDelta))
-                if resultsMap[key].__contains__(number) == False:
-                    resultsMap[key].append(number.symbol)
                 if checkIfContains(number) == False:
                     results.append(number)
                 
@@ -106,14 +105,9 @@ with open(file_path, "r") as file:
         currPos = 0
         for c in lines[1]:
             if c.isnumeric() == False and c != '.' and c != "\n":
-                key = Key(c, currPos, idx)
-                resultsMap[key] = []
-                analyseSurround(lines, currPos, idx, key)
+                analyseSurround(lines, currPos, idx)
             currPos += 1
         
         lines[0] = lines[1]
         idx += 1
-        
-    print(resultsMap.values())    
-    print(sumResultsMap())
     print(sumResults())
