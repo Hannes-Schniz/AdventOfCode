@@ -10,10 +10,23 @@ import os
 #                               Part 1
 #-------------------------------------------------------------------------
 
+def checkhits(scratchNumbers, winningNumbers):
+    count = 0
+    for scratchNumber in scratchNumbers:
+        if winningNumbers.__contains__(scratchNumber):
+            count += 1
+    return count
+
+def calcResult(hits):
+    if hits == 0:
+        return 0
+    return 2 ** (hits - 1)
+        
+
+
 #-------------------------------------------------------------------------
 #                               Part 2
 #-------------------------------------------------------------------------
-
 
 
 #-------------------------------------------------------------------------
@@ -21,7 +34,7 @@ import os
 #-------------------------------------------------------------------------
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_04-12-23-test.txt')
+file_path = os.path.join(dirname, 'input_04-12-23.txt')
 
 testresult = 13
 
@@ -50,11 +63,25 @@ def parseInput(line):
 
 with open(file_path, "r") as file:
     
-    #TODO fill with code
+    runOneResult = 0
+    
+    runTwoResult = 0
+    
     line = file.readline()
-    parsedInput = parseInput(line)
-    scratchNumbers = parsedInput[0]
-    winningNumbers = parsedInput[1]
-    print(scratchNumbers)
-    print(winningNumbers)
+    
+    idx = 0
+    
+    doubleLines = []
+    
+    while line:
+        parsedInput = parseInput(line)
+        scratchNumbers = parsedInput[0]
+        winningNumbers = parsedInput[1]
+        hits = checkhits(scratchNumbers, winningNumbers)
+        rowResult = calcResult(hits)
+        runOneResult += rowResult
+        line = file.readline()
+        idx += 1
+    print("Part 1: " + str(runOneResult))
+    print("Part 2: " + str(runTwoResult))
     
