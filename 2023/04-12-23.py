@@ -10,6 +10,10 @@ import os
 #                               Part 1
 #-------------------------------------------------------------------------
 
+testresult = 13
+
+testRows= [8,2,2,1,0,0]
+
 def checkhits(scratchNumbers, winningNumbers):
     count = 0
     for scratchNumber in scratchNumbers:
@@ -28,6 +32,9 @@ def calcResult(hits):
 #                               Part 2
 #-------------------------------------------------------------------------
 
+cards = []
+
+
 
 #-------------------------------------------------------------------------
 #                                General
@@ -36,13 +43,10 @@ def calcResult(hits):
 dirname = os.path.dirname(__file__)
 file_path = os.path.join(dirname, 'input_04-12-23.txt')
 
-testresult = 13
-
-testRows= [8,2,2,1,0,0]
-
-scratchNumbers = []
-
-winningNumbers = []
+class Card():
+    def __init__(self, scratchNumbers, winningNumbers):
+        self.scratchNumbers = scratchNumbers
+        self.winningNumbers = winningNumbers
 
 def parseInput(line):
     parsed = []
@@ -75,11 +79,11 @@ with open(file_path, "r") as file:
     
     while line:
         parsedInput = parseInput(line)
-        scratchNumbers = parsedInput[0]
-        winningNumbers = parsedInput[1]
-        hits = checkhits(scratchNumbers, winningNumbers)
+        card = Card(parsedInput[0], parsedInput[1])
+        hits = checkhits(card.scratchNumbers, card.winningNumbers)
         rowResult = calcResult(hits)
         runOneResult += rowResult
+        cards.append(card)
         line = file.readline()
         idx += 1
     print("Part 1: " + str(runOneResult))
