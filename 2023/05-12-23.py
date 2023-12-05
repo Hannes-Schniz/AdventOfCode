@@ -24,7 +24,19 @@ class Mapping:
 #                               Part 2
 #-------------------------------------------------------------------------
 
-
+def getLowestSoilIndex():
+    firstRun = True
+    minSoilIndex = 0
+    print(seeds)
+    for seed in seeds:
+        currSoilIndex = getSoilIndex(seed, 0)
+        if firstRun:
+            minSoilIndex = currSoilIndex
+            firstRun = False
+            continue
+        if currSoilIndex < minSoilIndex:
+            minSoilIndex = currSoilIndex
+    return minSoilIndex
         
         
         
@@ -34,7 +46,7 @@ class Mapping:
 #-------------------------------------------------------------------------
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_05-12-23-test.txt')
+file_path = os.path.join(dirname, 'input_05-12-23.txt')
 
 
 
@@ -63,15 +75,19 @@ def cleanMappings(dirtyMappings):
 
 
 def checkIfInMapRange(mapping, value):
-    if value >= mapping.source and value <= mapping.source + mapping.mapRange - 1:
-        return True
-    return False
+    return value >= mapping.source and value < mapping.source + mapping.mapRange
 
-def getSoilIndex(targetIdx):
-    for mapping in mappings[0]:
+def getSoilIndex(targetIdx, step):
+    if step == len(mappings):
+        print(targetIdx)
+        return targetIdx
+    for mapping in mappings[step]:
         if checkIfInMapRange(mapping, targetIdx):
-            return mapping.target + targetIdx - mapping.source
-    return targetIdx    
+            nextTarget = mapping.target + targetIdx - mapping.source
+            print(targetIdx, mapping.source, mapping.mapRange, mapping.target, nextTarget)
+            #print(targetIdx, nextTarget)
+            return getSoilIndex(nextTarget, step + 1)
+    return getSoilIndex(targetIdx, step + 1)    
 
 
 with open(file_path, "r") as file:
@@ -93,4 +109,4 @@ with open(file_path, "r") as file:
         return cleanMappings(dirtyMappings)
     
     mappings = parseInput()
-    print (getSoilIndex(100))
+    print (getLowestSoilIndex())
