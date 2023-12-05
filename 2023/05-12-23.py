@@ -67,7 +67,7 @@ def reorgSeeds():
     return newSeeds
 
 def startInMapRange(seed, mapping):
-    return seed.start >= mapping.source and seed.start < mapping.source + mapping.mapRange and seed.start + seed.seedRange <= mapping.source + mapping.mapRange
+    return seed.start >= mapping.source and seed.start < mapping.source + mapping.mapRange
 
 def seedRangeInMapRange(seed, mapping):
     return seed.start < mapping.source and seed.start + seed.seedRange >= mapping.source and seed.start + seed.seedRange <= mapping.source + mapping.mapRange
@@ -83,14 +83,14 @@ def getSeedRangeMapRangeOverlap(seed, mapping):
             
             return [Seed(mapping.target + deltaMappingStartSeedStart, seed.seedRange)]
         
-        else:
-            deltaMappingStartSeedStart = seed.start - mapping.source
-            deltaSeedStartMappingEnd = mapping.source + mapping.mapRange - seed.start
-            #seed.seedRange < mapping.mapRange so new Seeds are needed 
-            newStart = mapping.target + deltaMappingStartSeedStart
-            
-            return [Seed(newStart, deltaSeedStartMappingEnd), 
-                    Seed(mapping.source + mapping.mapRange, seed.seedRange - deltaSeedStartMappingEnd)]
+        
+        deltaMappingStartSeedStart = seed.start - mapping.source
+        deltaSeedStartMappingEnd = mapping.source + mapping.mapRange - seed.start
+        #seed.seedRange < mapping.mapRange so new Seeds are needed 
+        newStart = mapping.target + deltaMappingStartSeedStart
+        
+        return [Seed(newStart, deltaSeedStartMappingEnd), 
+                Seed(mapping.source + mapping.mapRange, seed.seedRange - deltaSeedStartMappingEnd)]
     
     if seedRangeInMapRange(seed, mapping):
         deltaSeedStartMappingStart = mapping.source - seed.start

@@ -89,8 +89,6 @@ with open(file_path, "r") as file:
     
     line = file.readline()
     
-    doubleLines = []
-    
     while line:
         parsedInput = parseInput(line)
         card = Card(parsedInput[0], parsedInput[1], 0)

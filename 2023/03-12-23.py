@@ -103,10 +103,10 @@ def analyseSurround(lines, idx, currLine, fillMethode):
     if endIDX >= len(lines[1]):
         endIDX = len(lines[1]) - 1
         
-    # print(lines[0][startIDX], lines[0][idx], lines[0][endIDX])
-    # print(lines[1][startIDX], lines[1][idx], lines[1][endIDX])
-    # print(lines[2][startIDX], lines[2][idx], lines[2][endIDX])
-    # print()
+    print(lines[0][startIDX], lines[0][idx], lines[0][endIDX])
+    print(lines[1][startIDX], lines[1][idx], lines[1][endIDX])
+    print(lines[2][startIDX], lines[2][idx], lines[2][endIDX])
+    print()
     
     #current line relative to the symbol line
     lineDelta = -1
