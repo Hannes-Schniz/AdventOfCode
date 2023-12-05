@@ -47,24 +47,16 @@ def reorgSeeds():
         newSeeds.append(Seed(seeds[i], seeds[i+1]))
     return newSeeds
 
-def rangesOverlap(seed, mapping):
-    if seed.start >= mapping.source and seed.start < mapping.source + mapping.mapRange:
-        return True
-    if seed.start + seed.seedRange > mapping.source and seed.start + seed.seedRange <= mapping.source + mapping.mapRange:
-        return True
-    return False
-
 def startInMapRange(seed, mapping):
     return seed.start >= mapping.source and seed.start < mapping.source + mapping.mapRange and seed.start + seed.seedRange <= mapping.source + mapping.mapRange
 
 def seedRangeInMapRange(seed, mapping):
-    return seed.start < mapping.source and seed.start + seed.seedRange >= mapping.source 
+    return seed.start < mapping.source and seed.start + seed.seedRange >= mapping.source and seed.start + seed.seedRange <= mapping.source + mapping.mapRange
 
 def seedRangeOverMapRange(seed, mapping):
     return seed.start < mapping.source and seed.start + seed.seedRange > mapping.source + mapping.mapRange    
         
 def getSeedRangeMapRangeOverlap(seed, mapping):
-    newSeeds = [seed]
     
     if startInMapRange(seed, mapping):
         if seed.start + seed.seedRange <= mapping.source + mapping.mapRange:
@@ -72,32 +64,31 @@ def getSeedRangeMapRangeOverlap(seed, mapping):
             return [Seed(mapping.target + deltaMappingStartSeedStart, seed.seedRange)]
         else:
             deltaMappingStartSeedStart = seed.start - mapping.source
+            deltaSeedStartMappingEnd = mapping.source + mapping.mapRange - seed.start
             #seed.seedRange < mapping.mapRange so new Seeds are needed 
-            newRange = mapping.mapRange - deltaMappingStartSeedStart
             newStart = mapping.target + deltaMappingStartSeedStart
-            return [Seed(newStart, newRange), Seed(seed.start + newRange, seed.seedRange - newRange)]
+            return [Seed(newStart, deltaSeedStartMappingEnd), 
+                    Seed(mapping.source + mapping.mapRange, seed.seedRange - deltaSeedStartMappingEnd)]
     
     if seedRangeInMapRange(seed, mapping):
         deltaSeedStartMappingStart = mapping.source - seed.start
         newRange = seed.seedRange - deltaSeedStartMappingStart
-        return [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.target, seed.seedRange - deltaSeedStartMappingStart) ]
+        return [Seed(seed.start, deltaSeedStartMappingStart), 
+                Seed(mapping.target, newRange) ]
     
     if seedRangeOverMapRange(seed, mapping):
         deltaSeedStartMappingStart = mapping.source - seed.start
         deltaMappingEndSeedEnd = seed.start + seed.seedRange - (mapping.source + mapping.mapRange)
-        return [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.target, mapping.mapRange), Seed(mapping.source + mapping.mapRange, deltaMappingEndSeedEnd)]
+        return [Seed(seed.start, deltaSeedStartMappingStart), 
+                Seed(mapping.target, mapping.mapRange), 
+                Seed(mapping.source + mapping.mapRange, deltaMappingEndSeedEnd)]
+    
     return []
 
 def calcMappedRangesRec(seeds, step):
     if step == len(mappings):
         return seeds
-    
-    #for seed in seeds:
-    #    
-    #    for mapping in mappings[step]:
-    #        newSeeds = []
-    #        newSeeds.extend(getSeedRangeMapRangeOverlap(seed, mapping))
-    
+       
     newSeeds = []
     for seed in seeds:
         wasExtended = False
@@ -107,14 +98,9 @@ def calcMappedRangesRec(seeds, step):
                 newSeeds.extend(mappedSeed)
                 wasExtended = True
                 break
+            
         if wasExtended == False:
             newSeeds.append(seed)
-                   
-        
-    #for mapping in mappings[step]:
-    #    newSeeds = []
-    #    for seed in seeds:
-    #        newSeeds.extend(getSeedRangeMapRangeOverlap(seed, mapping))
     
     print(step +1)
     for seed in newSeeds:
@@ -136,7 +122,7 @@ def calcLowestSeed():
 #-------------------------------------------------------------------------
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_05-12-23-test.txt')
+file_path = os.path.join(dirname, 'input_05-12-23.txt')
 
 def extractSeeds(seedRow):
     working = seedRow.split(" ")
@@ -191,14 +177,19 @@ with open(file_path, "r") as file:
             inputs.append(line)
             line = file.readline()
         builder = []
+        idx = 0
         for value in inputs:
             if value == "\n":
                 dirtyMappings.append(stripStrings(builder))
                 builder = []
             else:
                 builder.append(value)
+            if idx == len(inputs) - 1:
+                dirtyMappings.append(stripStrings(builder))
+            idx += 1
         return cleanMappings(dirtyMappings)
     
     mappings = parseInput()
+    
     print ("Part 1: " + str(getLowestSoilIndex()))
     print ("Part 2: " + str(calcLowestSeed()))
