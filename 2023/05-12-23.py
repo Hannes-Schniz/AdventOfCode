@@ -51,13 +51,27 @@ def cleanMappings(dirtyMappings):
             continue
         
         #print(dirtyMappings[i][0][0])
+        workingMapping = []
         for value in dirtyMappings[i]:
             if value[0][0].isnumeric() == False:
                 continue
             value = value.split(" ")
-            cleanMappings.append( Mapping(int(value[0]), int(value[1]), int(value[2])))
+            workingMapping.append( Mapping(int(value[0]), int(value[1]), int(value[2])))
             #print(cleanMappings[-1].source, cleanMappings[-1].target, cleanMappings[-1].mapRange)
+        cleanMappings.append(workingMapping)
     return cleanMappings
+
+
+def checkIfInMapRange(mapping, value):
+    if value >= mapping.source and value <= mapping.source + mapping.mapRange - 1:
+        return True
+    return False
+
+def getSoilIndex(targetIdx):
+    for mapping in mappings[0]:
+        if checkIfInMapRange(mapping, targetIdx):
+            return mapping.target + targetIdx - mapping.source
+    return targetIdx    
 
 
 with open(file_path, "r") as file:
@@ -79,10 +93,4 @@ with open(file_path, "r") as file:
         return cleanMappings(dirtyMappings)
     
     mappings = parseInput()
-    print(seeds)
-
-    
-
-
-
-    
+    print (getSoilIndex(100))
