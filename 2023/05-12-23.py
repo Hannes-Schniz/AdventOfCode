@@ -69,20 +69,21 @@ def getSeedRangeMapRangeOverlap(seed, mapping):
     if startInMapRange(seed, mapping):
         deltaMappingStartSeedStart = seed.start - mapping.source
         if mapping.mapRange + seed.start - deltaMappingStartSeedStart >= seed.seedRange + seed.start:
-            return newSeeds
+            return [Seed(mapping.target, seed.seedRange)]
         #seed.seedRange < mapping.mapRange so new Seeds are needed 
         newRange = mapping.mapRange - deltaMappingStartSeedStart
-        newSeeds = [Seed(seed.start, newRange), Seed(seed.start + newRange, seed.seedRange - newRange)]
+        newStart = mapping.target + deltaMappingStartSeedStart
+        newSeeds = [Seed(newStart, newRange), Seed(seed.start + newRange, seed.seedRange - newRange)]
     
     if seedRangeInMapRange(seed, mapping):
         deltaSeedStartMappingStart = mapping.source - seed.start
         newRange = seed.seedRange - deltaSeedStartMappingStart
-        newSeeds = [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.source, seed.seedRange - deltaSeedStartMappingStart) ]
+        newSeeds = [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.target, seed.seedRange - deltaSeedStartMappingStart) ]
     
     if seedRangeOverMapRange(seed, mapping):
-        deltaSeedStartMappingStart = mapping.source - seed.start
+        deltaMappingStartSeedStart = seed.start - mapping.source
         deltaMappingEndSeedEnd = seed.start + seed.seedRange - (mapping.source + mapping.mapRange)
-        newSeeds = [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.source, mapping.mapRange), Seed(mapping.source + mapping.mapRange, deltaMappingEndSeedEnd)]
+        newSeeds = [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.target, mapping.mapRange), Seed(mapping.source + mapping.mapRange, deltaMappingEndSeedEnd)]
     
     return newSeeds
 
