@@ -1,10 +1,6 @@
 import os
 
-# parse input into scratch and winning numbers
-# check for each scratch number if the winning numbers contains it
-# add up counter for ech containing number
-# calc 2^counter
-# add up all results
+
 
 #-------------------------------------------------------------------------
 #                               Part 1
