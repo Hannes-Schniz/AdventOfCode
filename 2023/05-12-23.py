@@ -108,6 +108,45 @@ def calcMappedRangesRec(seeds, step):
     print()
     
     return calcMappedRangesRec(newSeeds, step + 1)
+
+def calcMappedRanges(seeds):
+       
+    fullyMappedRange = []
+    fullyMappedRange.append(seeds)
+    for mappingRange in mappings:
+        newSeeds = []
+        for seed in fullyMappedRange[len(fullyMappedRange) - 1]:
+            wasExtended = False
+            for mapping in mappingRange:
+                mappedSeed = getSeedRangeMapRangeOverlap(seed, mapping)
+                if mappedSeed != []:
+                    newSeeds.extend(mappedSeed)
+                    wasExtended = True
+                    break
+            
+            if wasExtended == False:
+                newSeeds.append(seed)
+        fullyMappedRange.append(newSeeds)
+    
+    idx = 1
+    for mappedRange in fullyMappedRange:
+        print(idx)
+        for seed in mappedRange:
+            print(str(seed.start) + " " + str(seed.seedRange))
+        idx += 1
+        print()
+    
+    return fullyMappedRange
+    
+
+def letsTry():
+    mappedRanges = calcMappedRanges(reorgSeeds())
+    smallesStart = mappedRanges[len(mappedRanges) - 1][0].start 
+    for seed in mappedRanges[len(mappedRanges) - 1]:
+        if seed.start < smallesStart:
+            smallesStart = seed.start
+            
+    return smallesStart   
         
 def calcLowestSeed():
     mappedRanges = calcMappedRangesRec(reorgSeeds(), 0)
@@ -192,4 +231,4 @@ with open(file_path, "r") as file:
     mappings = parseInput()
     
     print ("Part 1: " + str(getLowestSoilIndex()))
-    print ("Part 2: " + str(calcLowestSeed()))
+    print ("Part 2: " + str(letsTry()))
