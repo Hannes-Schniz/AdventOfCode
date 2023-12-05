@@ -69,24 +69,24 @@ def getSeedRangeMapRangeOverlap(seed, mapping):
     if startInMapRange(seed, mapping):
         if seed.start + seed.seedRange <= mapping.source + mapping.mapRange:
             deltaMappingStartSeedStart = seed.start - mapping.source
-            newSeeds = [Seed(mapping.target + deltaMappingStartSeedStart, seed.seedRange)]
+            return [Seed(mapping.target + deltaMappingStartSeedStart, seed.seedRange)]
         else:
             deltaMappingStartSeedStart = seed.start - mapping.source
             #seed.seedRange < mapping.mapRange so new Seeds are needed 
             newRange = mapping.mapRange - deltaMappingStartSeedStart
             newStart = mapping.target + deltaMappingStartSeedStart
-            newSeeds = [Seed(newStart, newRange), Seed(seed.start + newRange, seed.seedRange - newRange)]
+            return [Seed(newStart, newRange), Seed(seed.start + newRange, seed.seedRange - newRange)]
     
     if seedRangeInMapRange(seed, mapping):
         deltaSeedStartMappingStart = mapping.source - seed.start
         newRange = seed.seedRange - deltaSeedStartMappingStart
-        newSeeds = [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.target, seed.seedRange - deltaSeedStartMappingStart) ]
+        return [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.target, seed.seedRange - deltaSeedStartMappingStart) ]
     
     if seedRangeOverMapRange(seed, mapping):
         deltaSeedStartMappingStart = mapping.source - seed.start
         deltaMappingEndSeedEnd = seed.start + seed.seedRange - (mapping.source + mapping.mapRange)
-        newSeeds = [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.target, mapping.mapRange), Seed(mapping.source + mapping.mapRange, deltaMappingEndSeedEnd)]
-    return newSeeds
+        return [Seed(seed.start, deltaSeedStartMappingStart), Seed(mapping.target, mapping.mapRange), Seed(mapping.source + mapping.mapRange, deltaMappingEndSeedEnd)]
+    return []
 
 def calcMappedRangesRec(seeds, step):
     if step == len(mappings):
@@ -97,15 +97,30 @@ def calcMappedRangesRec(seeds, step):
     #    for mapping in mappings[step]:
     #        newSeeds = []
     #        newSeeds.extend(getSeedRangeMapRangeOverlap(seed, mapping))
-            
+    
+    newSeeds = []
+    for seed in seeds:
+        wasExtended = False
+        for mapping in mappings[step]:
+            mappedSeed = getSeedRangeMapRangeOverlap(seed, mapping)
+            if mappedSeed != []:
+                newSeeds.extend(mappedSeed)
+                wasExtended = True
+                break
+        if wasExtended == False:
+            newSeeds.append(seed)
+                   
         
-    for mapping in mappings[step]:
-        newSeeds = []
-        for seed in seeds:
-            newSeeds.extend(getSeedRangeMapRangeOverlap(seed, mapping))
+    #for mapping in mappings[step]:
+    #    newSeeds = []
+    #    for seed in seeds:
+    #        newSeeds.extend(getSeedRangeMapRangeOverlap(seed, mapping))
+    
+    print(step +1)
     for seed in newSeeds:
         print(str(seed.start) + " " + str(seed.seedRange))
     print()
+    
     return calcMappedRangesRec(newSeeds, step + 1)
         
 def calcLowestSeed():
