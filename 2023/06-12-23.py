@@ -1,9 +1,4 @@
 import os
-
-import time
-import curses
-
-stdscr = curses.initscr()
     
 
 class Race:
@@ -16,9 +11,6 @@ class Race:
 #-------------------------------------------------------------------------
 #                               Part 1
 #-------------------------------------------------------------------------
-def printAndOverwrite(string):
-    stdscr.addstr(0, 0, string)
-    stdscr.refresh()
              
 
 def calcDistance(time, speed):
@@ -36,8 +28,8 @@ def findWinningTimes(race):
         distance = calcDistance(race.time - i, i)
         if distance > race.distance:
             winnings +=1
-        printAndOverwrite(str(100/race.time * (race.time - i)) + "%")
-    print(winnings)
+        percentage = str(100/race.time * (race.time - i))
+        print("Calulations left: " + percentage[:4] + "%", end='\r')
     return winnings
     
 
@@ -60,7 +52,6 @@ def mergeNumbers(races):
     for race in races:
         mergedTime += str(race.time)
         mergedDistance += str(race.distance)
-    print(str(mergedTime), str(mergedDistance))
     return Race(int(mergedTime), int(mergedDistance))
     
         
@@ -77,9 +68,7 @@ file_path = os.path.join(dirname, 'input_06-12-23.txt')
 def parseInput(lineOne, lineTwo):
     parsedInput = []
     valuesTime = list(filter(None, lineOne.split(":")[1].strip().split(" ")))
-    valuesDist = list(filter(None, lineTwo.split(":")[1].strip().split(" ")) )
-    print(valuesTime)
-    print(valuesDist)   
+    valuesDist = list(filter(None, lineTwo.split(":")[1].strip().split(" ")) )  
     for i in range(len(valuesTime)):
         parsedInput.append(Race(int(valuesTime[i]), int(valuesDist[i])))
     return parsedInput
@@ -91,8 +80,6 @@ def parseInput(lineOne, lineTwo):
 
 with open(file_path, "r") as file:
     parsedInput = parseInput(file.readline(), file.readline())
-    
-    
-    print("Part 1: " + str(calcResult(parsedInput)))
+    print("Part 1: " + str(calcResult(parsedInput))  + "           ")
     print("Part 2: " + str(findWinningTimes(mergeNumbers(parsedInput))))
     
