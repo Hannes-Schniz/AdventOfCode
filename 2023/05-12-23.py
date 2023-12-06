@@ -6,6 +6,10 @@ mappings= []
 
 soil = []  
 
+constWidth= 100
+
+widthExtraInformation = 5
+
 class Mapping:
     def __init__(self, target, source, mapRange):
         self.target = target
@@ -30,11 +34,26 @@ def getSoilIndex(targetIdx, step):
             return getSoilIndex(nextTarget, step + 1)
     return getSoilIndex(targetIdx, step + 1)    
 
+def getLowestSoilIndex():
+    firstRun = True
+    minSoilIndex = 0
+    #print(seeds)
+    for seed in seeds:
+        currSoilIndex = getSoilIndex(seed, 0)
+        if firstRun:
+            minSoilIndex = currSoilIndex
+            firstRun = False
+            continue
+        if currSoilIndex < minSoilIndex:
+            minSoilIndex = currSoilIndex
+    return minSoilIndex
+
 #-------------------------------------------------------------------------
 #                               Part 2
 #-------------------------------------------------------------------------
 
 class Seed:
+    parent = None
     def __init__(self, start, seedRange):
         self.start = start
         self.seedRange = seedRange
@@ -107,51 +126,102 @@ def calcMappedRangesRec(seeds, step):
         if wasExtended == False:
             newSeeds.append(seed)
     
-    print(step +1)
-    for seed in newSeeds:
-        print(str(seed.start) + " " + str(seed.seedRange))
-    print()
+    #print(step +1)
+    #for seed in newSeeds:
+    #    print(str(seed.start) + " " + str(seed.seedRange))
+    #print()
     
     return calcMappedRangesRec(newSeeds, step + 1)
 
+def fillString(string, length):
+    while len(string) < length:
+        string += " "
+    return string
+
+def printDivider(length):
+    divider = "+"
+    for i in range(0, length):
+        divider += "-"
+    divider += "+"
+    for i in range(0, widthExtraInformation):
+        divider += "-"
+    divider += "+"
+    for i in range(0, widthExtraInformation):
+        divider += "-"
+    divider += "+"
+    print(divider)
+    
+def printPercentage(seed, target):
+    if target==None:
+        return fillString("  x", widthExtraInformation) + "|"
+    percentage = 100 / seed.seedRange * target.seedRange
+    if seed.seedRange == target.seedRange:
+        percentage = 100 
+    percentage = round(percentage, 1)
+    percentage = str(percentage) + "%"
+    return fillString(percentage, widthExtraInformation) + "|"
+
+def sumRanges(seeds):
+    sumRanges = 0
+    for seed in seeds:
+        sumRanges += seed.seedRange
+    return sumRanges
+
 def calcMappedRanges(seeds):
+    
+    dummyStatisticsSeeed = Seed(0, sumRanges(seeds))
        
     fullyMappedRange = [seeds]
-    
+    idx = 1 
     for mappingRange in mappings:
         newSeeds = []
+        print("Filter: " + str(idx))
+        print()
+        print("Status--------source---range-----(filterSource--filterRange--filterTarget)------target---range---")
+        printDivider(constWidth - 1)
         for seed in fullyMappedRange[len(fullyMappedRange) - 1]:
             wasExtended = False
             for mapping in mappingRange:
                 mappedSeed = getSeedRangeMapRangeOverlap(seed, mapping)
                 if mappedSeed != []:
+                    for outputSeed in mappedSeed:
+                        outputSeed.parent = seed
+                        print(fillString(f"|Filtered: {seed.start} {seed.seedRange} --> {mapping.source, mapping.mapRange, mapping.target} --> {outputSeed.start} {outputSeed.seedRange}" , constWidth) 
+                              + "|" 
+                              + printPercentage(seed, outputSeed)
+                              + printPercentage(dummyStatisticsSeeed, outputSeed))
                     newSeeds.extend(mappedSeed)
                     wasExtended = True
                     break
             
             if wasExtended == False:
                 newSeeds.append(seed)
-                
+                print(fillString(f"|Pass Through: {seed.start} {seed.seedRange} --> {seed.start} {seed.seedRange}" , constWidth) 
+                      + "|" 
+                      + printPercentage(seed, None)
+                      + printPercentage(dummyStatisticsSeeed, seed))
+            printDivider(constWidth -1)
+        print()        
         fullyMappedRange.append(newSeeds)
-    
-    
-    idx = 1
-    for mappedRange in fullyMappedRange:
-        print(idx)
-        sumRanges = 0
-        for seed in mappedRange:
-            print(str(seed.start) + " " + str(seed.seedRange))
-            sumRanges += seed.seedRange
         idx += 1
-        print()
-        print (sumRanges)
-        print()
+    
+    
+    #idx = 1
+    #for mappedRange in fullyMappedRange:
+    #    print(idx)
+    #    sumRanges = 0
+    #    for seed in mappedRange:
+    #        print(str(seed.start) + " " + str(seed.seedRange))
+    #        sumRanges += seed.seedRange
+    #    idx += 1
+    #    print()
+    #    print (sumRanges)
+    #    print()
     
     
     
     return fullyMappedRange
     
-
 def letsTry():
     mappedRanges = calcMappedRanges(reorgSeeds())
     smallesStart = mappedRanges[len(mappedRanges) - 1][0].start 
@@ -174,26 +244,12 @@ def calcLowestSeed():
 #-------------------------------------------------------------------------
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_05-12-23-test.txt')
+file_path = os.path.join(dirname, 'input_05-12-23.txt')
 
 def extractSeeds(seedRow):
     working = seedRow.split(" ")
     for j in range(1, len(working)):
         seeds.append(int(working[j]))
-
-def getLowestSoilIndex():
-    firstRun = True
-    minSoilIndex = 0
-    #print(seeds)
-    for seed in seeds:
-        currSoilIndex = getSoilIndex(seed, 0)
-        if firstRun:
-            minSoilIndex = currSoilIndex
-            firstRun = False
-            continue
-        if currSoilIndex < minSoilIndex:
-            minSoilIndex = currSoilIndex
-    return minSoilIndex
 
 def stripStrings(strings):
     return [string.rstrip() for string in strings]
@@ -242,3 +298,4 @@ with open(file_path, "r") as file:
     print ("Part 1: " + str(getLowestSoilIndex()))
     
     print ("Part 2: " + str(letsTry()))
+    print ("Part 2(rec): " + str(calcLowestSeed()))
