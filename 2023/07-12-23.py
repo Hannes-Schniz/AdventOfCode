@@ -57,6 +57,9 @@ def deMapCardValue(value):
     else:
         return str(value) 
 
+def sortCards(cards):
+    return sorted(cards, reverse=True)
+
 
 
 #-------------------------------------------------------------------------
@@ -69,6 +72,17 @@ def deMapCardValue(value):
 # Sort every list of Hands in the Hashmap from best to worst
 # merge all lists into one list
 # calculate Winnings
+
+# incorrect:   x < 248998691 249343586 249199990  249143986  
+# x != 249008195 x != 248757566 x != 248192316 x != 248512881
+
+def calcResult(hands):
+    result= 0
+    idx = 1
+    for hand in hands:
+        result += hand.value * idx
+        idx += 1
+    return result
 
 
 
@@ -84,7 +98,7 @@ def deMapCardValue(value):
 #-------------------------------------------------------------------------
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_07-12-23-test.txt')
+file_path = os.path.join(dirname, 'input_07-12-23.txt')
 
 
 
@@ -99,10 +113,8 @@ def parseInput(line):
     
     parsedhand.value = int(splittedLine[1].strip())
     
+    
     return parsedhand
- 
-def sortCards(cards):
-    return sorted(cards, reverse=True)
     
 def matchCards(hand):
     cardsMap = {}
@@ -127,38 +139,64 @@ def checkTwoPair(cardsMap):
         return (True, sortCards(pairs))
     return False
 
-
-
 def getHandKey(hand):
     cardsMap = matchCards(hand)
     for card in cardsMap:
         if cardsMap[card] == 5:
-            return ("Five of a Kind", card)
+            return ("Five of a Kind", [card])
         elif cardsMap[card] == 4:
-            return ("Four of a Kind", card)
+            return ("Four of a Kind", [card])
         elif cardsMap[card] == 3:
             if checkFullHouse(cardsMap):
-                return ("Full House", card)
-            return ("Three of a Kind", card)
+                return ("Full House", [card])
+            return ("Three of a Kind", [card])
         elif cardsMap[card] == 2:
             isTwoPair = checkTwoPair(cardsMap)
             if isTwoPair:
                 return ("Two Pairs", isTwoPair[1])
-            return ("One Pair", card)
-    return ("High Card", sortCards(hand.cards)[0])
+            return ("One Pair", [card])
+    return ("High Card", [sortCards(hand.cards)[0]])
 
     
 def mapHand(hand):
     handType = getHandKey(hand)
     hand.type = handType
     handMap[handType[0]].append(hand)
-
-def sortStrength(hands):
-    print("TODO")
     
-    
+#returns -1 if cardsOne < cardsTwo, 1 if > and 0 if =
+def compareCards(cardsOne, cardsTwo):
+    for i in range(0,len(cardsOne)):
+        if cardsTwo[i] == cardsOne[i]:
+            continue
+        if cardsOne[i] < cardsTwo[i]:
+            return -1
+        elif cardsOne[i] > cardsTwo[i]:
+            return 1
+    return 0
 
+def getWeakest(hands):
+    weakest = hands[0]
+    #gets the hand with the highest numbers in the type
+    for i in range(0,len(hands)):
+                
+        comparedResult = compareCards(weakest.cards, hands[i].cards)
+        if comparedResult == 1:
+            weakest = hands[i]
+            
+           
+    return weakest
 
+def sortStrength():
+    sortedHands = []
+    for key in handMap.keys():
+        currHands = handMap[key].copy()
+        if len(currHands) == 0:
+            continue
+        while len(currHands) > 0:
+            weakestHand = getWeakest(currHands)
+            sortedHands.append(weakestHand)
+            currHands.remove(weakestHand)   
+    return sortedHands
 
 with open(file_path, "r") as file:
     
@@ -167,7 +205,9 @@ with open(file_path, "r") as file:
     while input:
         mapHand(parseInput(input))
         input = file.readline()
-    print("TODO")
-    #print("Part 1: " + str(calcResult(parsedInput))  + "           ")
+    
+    sortedHands = sortStrength()
+    
+    print("Part 1: " + str(calcResult(sortedHands))  + "           ")
     #print("Part 2: " + str(findWinningTimes(mergeNumbers(parsedInput))))
     
