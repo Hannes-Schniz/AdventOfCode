@@ -1,4 +1,4 @@
-import os
+import os, functools
 
 
 
@@ -125,6 +125,7 @@ def matchCards(hand):
             cardsMap[card] = 1
     return cardsMap
 
+
 def checkFullHouse(cardsMap):
     if 2 in cardsMap.values():
         return True
@@ -157,34 +158,34 @@ def getHandKey(hand):
             return ("One Pair", [card])
     return ("High Card", [sortCards(hand.cards)[0]])
 
+def isThree(cards):
+    sortedCards = sorted(cards)
+    for card in sortedCards:
+        if sortedCards.count(card) == 3:
+            return True
+    return False
+
+def getHandKey(hand):
+    matches = set(hand.cards)
+    if len(matches) == 1:
+        return "Five of a Kind"
+    if len(matches) == 2:
+        if isThree(hand.cards):
+            return "Full House"
+        return "Four of a Kind"
+    if len(matches) == 3:
+        if isThree(hand.cards):
+            return "Three of a Kind"
+        return "Two Pairs"
+    if len(matches) == 4:
+        return "One Pair"
+    return "High Card"  
+        
     
 def mapHand(hand):
     handType = getHandKey(hand)
     hand.type = handType
-    handMap[handType[0]].append(hand)
-    
-#returns -1 if cardsOne < cardsTwo, 1 if > and 0 if =
-def compareCards(cardsOne, cardsTwo):
-    for i in range(0,len(cardsOne)):
-        if cardsTwo[i] == cardsOne[i]:
-            continue
-        if cardsOne[i] < cardsTwo[i]:
-            return -1
-        elif cardsOne[i] > cardsTwo[i]:
-            return 1
-    return 0
-
-def getWeakest(hands):
-    weakest = hands[0]
-    #gets the hand with the highest numbers in the type
-    for i in range(0,len(hands)):
-                
-        comparedResult = compareCards(weakest.cards, hands[i].cards)
-        if comparedResult == 1:
-            weakest = hands[i]
-            
-           
-    return weakest
+    handMap[handType].append(hand)
 
 def sortStrength():
     sortedHands = []
@@ -192,10 +193,7 @@ def sortStrength():
         currHands = handMap[key].copy()
         if len(currHands) == 0:
             continue
-        while len(currHands) > 0:
-            weakestHand = getWeakest(currHands)
-            sortedHands.append(weakestHand)
-            currHands.remove(weakestHand)   
+        sortedHands.extend(sorted(currHands, key=lambda hand: hand.cards))
     return sortedHands
 
 with open(file_path, "r") as file:
@@ -205,9 +203,10 @@ with open(file_path, "r") as file:
     while input:
         mapHand(parseInput(input))
         input = file.readline()
+
     
-    sortedHands = sortStrength()
+sortedHands = sortStrength()
     
-    print("Part 1: " + str(calcResult(sortedHands))  + "           ")
-    #print("Part 2: " + str(findWinningTimes(mergeNumbers(parsedInput))))
+print("Part 1: " + str(calcResult(sortedHands))  + "           ")
+#print("Part 2: " + str(findWinningTimes(mergeNumbers(parsedInput))))
     
