@@ -1,8 +1,11 @@
 """ 2023 aoc07 """
 
-import functools
+import functools, os
 
-with open("input07.txt", "r", encoding="utf-8") as f:
+dirname = os.path.dirname(__file__)
+file_path = os.path.join(dirname, 'input_07-12-23.txt')   
+
+with open(file_path, "r") as f:
     input_list = f.read().splitlines()
 
 bids = {}

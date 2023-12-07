@@ -13,6 +13,14 @@ handMap = {"High Card": [],
            "Four of a Kind": [], 
            "Five of a Kind": []}
 
+handHash = {"High Card": [], 
+           "One Pair": [], 
+           "Two Pairs": [], 
+           "Three of a Kind": [], 
+           "Full House": [], 
+           "Four of a Kind": [], 
+           "Five of a Kind": []}
+
 class Hand:
     def __init__(self, cards, value, type):
         #list of cards from input
@@ -43,22 +51,35 @@ def mapCardValue(value):
     else:
         return int(value)   
 
-def deMapCardValue(value):
-    if value == 10:
-        return "T"
-    elif value == 11:
-        return "J"
-    elif value == 12:
-        return "Q"
-    elif value == 13:
-        return "K"
-    elif value == 14:
-        return "A"
+def mapCardValueV2(value):
+    if value == "J":
+        return 1
+    elif value == "Q":
+        return 12
+    elif value == "K":
+        return 13
+    elif value == "A":
+        return 14
+    elif value == "T":
+        return 10
     else:
-        return str(value) 
+        return int(value)   
 
-def sortCards(cards):
-    return sorted(cards, reverse=True)
+def parseInput(line):
+    parsedCards = []
+    parsedCardsV2 = []
+    parsedhand = Hand([], 0, "")
+    parsedhandV2 = Hand([], 0, "")
+    splittedLine = line.split(" ")
+    for char in splittedLine[0]:
+        parsedCards.append(mapCardValue(char))
+        parsedCardsV2.append(mapCardValueV2(char))
+    parsedhand.cards = parsedCards
+    parsedhand.value = int(splittedLine[1].strip())
+    parsedhandV2.cards = parsedCardsV2
+    parsedhandV2.value = int(splittedLine[1].strip())
+    return (parsedhand, parsedhandV2)
+    
 
 
 
@@ -85,79 +106,6 @@ def calcResult(hands):
     return result
 
 
-
-#-------------------------------------------------------------------------
-#                               Part 2
-#-------------------------------------------------------------------------
-
-
-  
-
-#-------------------------------------------------------------------------
-#                                General
-#-------------------------------------------------------------------------
-
-dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_07-12-23.txt')
-
-
-
-def parseInput(line):
-    parsedCards = []
-    parsedhand = Hand([], 0, "")
-    
-    splittedLine = line.split(" ")
-    for char in splittedLine[0]:
-        parsedCards.append(mapCardValue(char))
-    parsedhand.cards = parsedCards
-    
-    parsedhand.value = int(splittedLine[1].strip())
-    
-    
-    return parsedhand
-    
-def matchCards(hand):
-    cardsMap = {}
-    for card in hand.cards:
-        if card in cardsMap:
-            cardsMap[card] += 1
-        else:
-            cardsMap[card] = 1
-    return cardsMap
-
-
-def checkFullHouse(cardsMap):
-    if 2 in cardsMap.values():
-        return True
-    return False
-
-def checkTwoPair(cardsMap):
-    pairs = []
-    for card in cardsMap:
-        if cardsMap[card] == 2:
-            pairs.append(card)
-    if len(pairs) == 2:
-        return (True, sortCards(pairs))
-    return False
-
-def getHandKey(hand):
-    cardsMap = matchCards(hand)
-    for card in cardsMap:
-        if cardsMap[card] == 5:
-            return ("Five of a Kind", [card])
-        elif cardsMap[card] == 4:
-            return ("Four of a Kind", [card])
-        elif cardsMap[card] == 3:
-            if checkFullHouse(cardsMap):
-                return ("Full House", [card])
-            return ("Three of a Kind", [card])
-        elif cardsMap[card] == 2:
-            isTwoPair = checkTwoPair(cardsMap)
-            if isTwoPair:
-                return ("Two Pairs", isTwoPair[1])
-            return ("One Pair", [card])
-    return ("High Card", [sortCards(hand.cards)[0]])
-
 def isThree(cards):
     sortedCards = sorted(cards)
     for card in sortedCards:
@@ -179,18 +127,58 @@ def getHandKey(hand):
         return "Two Pairs"
     if len(matches) == 4:
         return "One Pair"
-    return "High Card"  
-        
-    
+    return "High Card"
+
 def mapHand(hand):
     handType = getHandKey(hand)
     hand.type = handType
     handMap[handType].append(hand)
 
-def sortStrength():
+#-------------------------------------------------------------------------
+#                               Part 2
+#-------------------------------------------------------------------------
+
+def mostCommonCard(hand):
+    sortedCards = sorted(hand.cards)
+    mostCommonNumber = 0
+    for card in sortedCards:
+        if card == 1:
+            continue
+        if sortedCards.count(card) > sortedCards.count(mostCommonNumber) or (sortedCards.count(card) == sortedCards.count(mostCommonNumber) and card > mostCommonNumber):
+            mostCommonNumber = card
+            
+    return mostCommonNumber
+
+def replaceJokerWithMostCommonNumber(hand):
+    newHand = Hand(hand.cards.copy(), hand.value, hand.type)
+    newValue = mostCommonCard(hand)
+    for i in range(len(hand.cards)):
+        if newHand.cards[i] == 1:
+            newHand.cards[i] = newValue
+    return newHand  
+        
+    
+        
+        
+def mapHandV2(hand):
+    handType = getHandKey(replaceJokerWithMostCommonNumber(hand))
+    hand.type = handType
+    handHash[handType].append(hand)        
+    
+  
+
+#-------------------------------------------------------------------------
+#                                General
+#-------------------------------------------------------------------------
+
+dirname = os.path.dirname(__file__)
+file_path = os.path.join(dirname, 'input_07-12-23.txt')     
+
+
+def sortStrength(hashMap):
     sortedHands = []
-    for key in handMap.keys():
-        currHands = handMap[key].copy()
+    for key in hashMap.keys():
+        currHands = hashMap[key].copy()
         if len(currHands) == 0:
             continue
         sortedHands.extend(sorted(currHands, key=lambda hand: hand.cards))
@@ -198,15 +186,19 @@ def sortStrength():
 
 with open(file_path, "r") as file:
     
-    #TODO: Parse input
     input = file.readline()
     while input:
-        mapHand(parseInput(input))
+        parsedInput = parseInput(input)
+        mapHand(parsedInput[0])
+        mapHandV2(parsedInput[1])
         input = file.readline()
 
     
-sortedHands = sortStrength()
+sortedHands = sortStrength(handMap)
     
 print("Part 1: " + str(calcResult(sortedHands))  + "           ")
-#print("Part 2: " + str(findWinningTimes(mergeNumbers(parsedInput))))
+
+sortedHands = sortStrength(handHash)
+
+print("Part 2: " + str(calcResult(sortedHands)))
     
