@@ -1,4 +1,4 @@
-import os, functools
+import os
 
 start = 0
 
