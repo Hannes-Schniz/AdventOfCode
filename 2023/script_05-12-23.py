@@ -244,7 +244,7 @@ def calcLowestSeed():
 #-------------------------------------------------------------------------
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_05-12-23.txt')
+file_path = os.path.join(dirname, 'input/input_05-12-23.txt')
 
 def extractSeeds(seedRow):
     working = seedRow.split(" ")

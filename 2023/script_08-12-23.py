@@ -42,7 +42,7 @@ def traverse():
 #-------------------------------------------------------------------------
 
 dirname = os.path.dirname(__file__)
-file_path = os.path.join(dirname, 'input_08-12-23.txt')
+file_path = os.path.join(dirname, 'input/input_08-12-23.txt')
 
 with open(file_path, "r") as file:
     

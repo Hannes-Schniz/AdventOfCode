@@ -35,7 +35,7 @@ for script in years:
 
 selectedYear = years[getInput()]
 
-PATH_INPUT = str(BASE_PATH) + "/" +  selectedYear + "/input"
+PATH_INPUT = str(BASE_PATH) + "/" +  selectedYear + "/input/"
 PATH_TESTS = str(BASE_PATH) + "/" +  selectedYear + "/tests"
 PATH_SCRIPTS = str(BASE_PATH) + "/"+ selectedYear
 
