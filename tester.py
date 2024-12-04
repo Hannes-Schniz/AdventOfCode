@@ -78,5 +78,5 @@ def loadInput(inputPath, script):
 key = 0
 
 
-print(my_class.solutionOne(loadInput(PATH_INPUT, userChoice)))
-print(my_class.solutionTwo(loadInput(PATH_INPUT, userChoice)))
+print(my_class.solutionOne(loadInput(PATH_TESTS, userChoice)))
+print(my_class.solutionTwo(loadInput(PATH_TESTS, userChoice)))
