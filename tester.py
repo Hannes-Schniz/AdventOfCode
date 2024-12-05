@@ -3,6 +3,7 @@ from os.path import isfile, join, isdir
 import re
 import pathlib
 import importlib
+import math
 
 def getInput():
     userInput = input()
@@ -28,31 +29,42 @@ years = [d for d in listdir(BASE_PATH) if isdir(join(BASE_PATH, d))and re.search
 print("Welcome to the AdventOfCode Pyhton testing tool")
 print("Please choose a year:")
 
+print('+-'+'-'*len(years[0])+'-+-'+'-----+')
 i = 0
-for script in years:
-    print(str(i)+":", script)
+for year in years:
+    print('| ' + year + ' | ' + ' '*(4-len(str(i))) + str(i) + ' |')
     i += 1
+print('+-'+'-'*len(years[0])+'-+-'+'-----+')
 
-selectedYear = years[getInput()]
+choice = getInput()
+
+selectedYear = years[math.floor(choice/2)]
 
 PATH_INPUT = str(BASE_PATH) + "/" +  selectedYear + "/input/"
 PATH_TESTS = str(BASE_PATH) + "/" +  selectedYear + "/tests"
 PATH_SCRIPTS = str(BASE_PATH) + "/"+ selectedYear
 
+PATH_SELECTED_INPUT = ''
+if choice%2 == 0:
+    PATH_SELECTED_INPUT = PATH_INPUT
+else:
+    PATH_SELECTED_INPUT = PATH_TESTS
+
 REGEX = 'script.*'
 
-tests = [f for f in listdir(PATH_TESTS) if isfile(join(PATH_TESTS, f))]
-inputs = [f for f in listdir(PATH_INPUT) if isfile(join(PATH_INPUT, f))]
-scripts = [f for f in listdir(PATH_SCRIPTS) if isfile(join(PATH_SCRIPTS, f)) and re.search(REGEX, join(PATH_SCRIPTS, f)) ]
+scripts = sorted([f for f in listdir(PATH_SCRIPTS) if isfile(join(PATH_SCRIPTS, f)) and re.search(REGEX, join(PATH_SCRIPTS, f)) ])
 
 
 print("Choose a script to test the input on:")
 
+print('+-'+'-'*len(scripts[0])+'-+-'+'-----+------+')
+print('|      scripts         | test | real |')
+print('+-'+'-'*len(scripts[0])+'-+-'+'-----+------+')
 i = 0
 for script in scripts:
-    print(str(i)+":", script)
-    i += 1
-
+    print('| ' + script + ' | ' + ' '*(4-len(str(i))) + str(i) + ' | ' + ' '*(4-len(str(i+1))) + str(i+1) + ' |')
+    i += 2
+print('+-'+'-'*len(scripts[0])+'-+-'+'-----+------+')
 
     
 userChoice = scripts[getInput()]
@@ -78,5 +90,5 @@ def loadInput(inputPath, script):
 key = 0
 
 
-print(my_class.solutionOne(loadInput(PATH_INPUT, userChoice)))
-print(my_class.solutionTwo(loadInput(PATH_INPUT, userChoice)))
+print(my_class.solutionOne(loadInput(PATH_SELECTED_INPUT, userChoice)))
+print(my_class.solutionTwo(loadInput(PATH_SELECTED_INPUT, userChoice)))
