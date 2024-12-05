@@ -1,95 +1,52 @@
+import re
 class main:
-    def solutionOne(lines):
-        return ""
     def solutionTwo(lines):
+        cleanLines =[]
+        solution = 0
+        for line in lines:
+            cleanLines.append(line.strip())
+        for i in range(1, len(cleanLines)-1):
+            for j in range(1, len(cleanLines[i])-1):
+                if lines[i][j] != 'A':
+                    continue
+                solution += main.getX(lines, i, j)
+        return solution
+    
+    def solutionOne(lines):
         cleanLines =[]
         for line in lines:
             cleanLines.append(line.strip())
-        old_lines = cleanLines
-        cleanLines = main.search_delete(cleanLines)
-        main.print_Matrix(old_lines)
-        print("--------------------")
-        main.print_Matrix(cleanLines)
-        while old_lines != cleanLines:
-            cleanLines = main.search_delete(cleanLines)
-            old_lines = cleanLines
+        max_col = len(cleanLines[0])
+        max_row = len(cleanLines)
+        cols = [[] for _ in range(max_col)]
+        rows = [[] for _ in range(max_row)]
+        fdiag = [[] for _ in range(max_row + max_col - 1)]
+        bdiag = [[] for _ in range(len(fdiag))]
+        min_bdiag = -max_row + 1
+
+        for x in range(max_col):
+            for y in range(max_row):
+                cols[x].append(lines[y][x])
+                rows[y].append(lines[y][x])
+                fdiag[x+y].append(lines[y][x])
+                bdiag[x-y-min_bdiag].append(lines[y][x])
+        return main.find_XMAS(cols) + main.find_XMAS(rows) + main.find_XMAS(fdiag) + main.find_XMAS(bdiag)
         
-        #main.print_Matrix(cleanLines)
-        return ''
-    
-    def search_delete(lines):
-        for i in range(len(lines)-1):
-            for j in range(len(lines[i])-1):
-                lines = main.delete_surrounding(lines,j,i)
-        return lines
-    
-    def delete_surrounding(lines, x, y):
-        #xmas
-        match lines[y][x]:
-            case 'X':
-                return main.delete_x(lines, x, y)
-            case 'M':
-                return main.delete_m(lines, x, y)
-            case 'A':
-                return main.delete_a(lines, x, y)
-            case 'S':
-                return main.delete_s(lines, x, y)
-        return lines
-    
-    def delete_x(lines, x, y):
-        surrounding = main.getSurrounding(lines, x, y)
-        for pos in surrounding:
-            if lines[pos[1]][pos[0]] == 'M':
-                return lines
-        lines[y] = lines[y][:x]+'.'+lines[y][x+1:]
-        return lines
-    
-    def delete_m(lines, x, y):
-        surrounding = main.getSurrounding(lines, x, y)
-        for pos in surrounding:
-            print(y,x,lines[y][x], pos[0], pos[1], lines[pos[1]][pos[0]])
-            if lines[pos[1]][pos[0]] == 'X' or lines[pos[1]][pos[0]] == 'A':
-                return lines
-        lines[y] = lines[y][:x]+'.'+lines[y][x+1:]
-        return lines
-    
-    def delete_a(lines, x, y):
-        surrounding = main.getSurrounding(lines, x, y)
-        for pos in surrounding:
-            if lines[pos[1]][pos[0]] == 'A' or lines[pos[1]][pos[0]] == 'S':
-                return lines
-        lines[y] = lines[y][:x]+'.'+lines[y][x+1:]
-        return lines
-    
-    def delete_s(lines, x, y):
-        surrounding = main.getSurrounding(lines, x, y)
-        for pos in surrounding:
-            if lines[pos[1]][pos[0]] == 'A':
-                return lines
-        lines[y] = lines[y][:x]+'.'+lines[y][x+1:]
-        return lines          
-        
-    def getSurrounding(lines, x, y):
-        #print(x,y, len(lines), (len(lines[0]) -1), lines[0])
-        possibles = [(x+1,y), (x,y+1), (x-1,y), (x, y-1), (x+1,y+1), (x+1,y-1), (x-1, x-1), (x-1,x+1)]
-        print(possibles)
-        surrounding = []
-        for pos in possibles:
-            if pos[0] < 0:
-                continue
-            elif pos[1] < 0:
-                continue
-            elif pos[1] >= len(lines):
-                continue
-            elif pos[0] >= (len(lines[0]) -1):
-                continue
-            surrounding.append(pos)
-        print(surrounding)
-        #print(lines)
-        return surrounding
-    
-    def print_Matrix(lines):
+    def find_XMAS(lines):
+        solution = 0
         for line in lines:
-            print(line)
-                
+            curr = ''.join(line)
+            solution += len(re.findall('XMAS', curr))
+            solution += len(re.findall('SAMX', curr))   
+        return solution
+    
+    def getX(lines, i, j):
+        solution = 0
+        lt = ''.join(sorted([lines[i+1][j+1], lines[i-1][j-1]])) 
+        rt = ''.join(sorted([lines[i+1][j-1], lines[i-1][j+1]]))
+        solution += len(re.findall('MS', lt))
+        solution += len(re.findall('MS', rt)) 
+        if solution == 2:
+            return 1
+        return 0        
             
