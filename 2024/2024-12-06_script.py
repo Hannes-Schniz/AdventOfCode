@@ -1,45 +1,43 @@
 class main:
     def solutionOne(lines):
-        return main.get_count(main.traverse(lines), ['X'])
+        return main.get_count(main.traverse(lines)[0], ['X'])
     
     def solutionTwo(lines):
-        # 4722 False (too high)
-        # 1528 False (too low)
-        # 1528 False (too low)
-        # 1529 False
-        # 1560 False
-        # 1540 False
-        # 1539 False
-        # 1538 False
-        # 1664 False
         guard = main.find_guard(lines)
-        
-        solution = [guard]
+        route = main.traverse(lines)[1]
+        solution = 0
         first = main.is_loop(lines, guard[1], guard[0], guard[1], guard[0], 'up')
         if first != False:
             solution.append(first)
-        steps = main.parole(lines, guard[1], guard[0], 'up')
         step = 1
-        while steps[3] != 'done':
-            isLoop = main.is_loop(steps[0], steps[1], steps[2], steps[1], steps[2], steps[3])
-            print('checkloop for step', step)
-            step +=1
-            if isLoop != False and isLoop not in solution:
-                solution.append(isLoop)
-            steps = main.parole(steps[0], steps[1], steps[2], steps[3])
-        #print(solution)
-        return len(solution) -1
+        for y in range(len(lines)):
+            for x in range(len(lines[y])):
+                print('running position', step)
+                if (x,y) not in route[1]:
+                    step += 1
+                    continue
+                new_lines = [[y for y in x] for x in lines]
+                if new_lines[y][x] == '#':
+                    continue
+                if (x,y) != guard[1]:
+                    new_lines[y][x] = 'O'   
+                if main.is_loop(new_lines, guard[1], guard[0], guard[1], guard[0], 'up'):
+                    solution += 1
+                step += 1
+        return solution
     
     def traverse(lines):
         guard = main.find_guard(lines)
         steps = main.parole(lines, guard[1], guard[0], 'up')
+        route = [guard]
         while steps[3] != 'done':
+            route.append((steps[2],steps[1]))
             steps = main.parole(steps[0], steps[1], steps[2], steps[3])
-        return steps[0]
+        return [steps[0],route]
     
     def print_newLines(lines):
         for line in lines:
-            print(line)
+            print(''.join(line))
     
     def get_count(lines, chars):
         solution = 0
@@ -85,35 +83,8 @@ class main:
                 lines[y] = lines[y][:x] + 'X' + lines[y][x+1:]
                 return [lines,y,x - 1,direction]
                 
-    def is_loop(lines, y, x, start_y, start_x, direction):
-        traversed = [(start_x, start_y, direction)]
-        new_lines = [[y for y in x] for x in lines]
-        obj = ()
-        match direction:
-            case 'up':
-                direction = 'right'
-                if y - 1 < 0 or lines[y-1][x] == '#':
-                    return False
-                new_lines[y-1][x] = '#'
-                obj = (x, y-1)
-            case 'right':
-                direction = 'down'
-                if x + 1 >= len(lines[y]) or lines[y][x+1] == '#':
-                    return False
-                new_lines[y][x+1] = '#'
-                obj = (x+1, y)
-            case 'down':
-                direction = 'left'
-                if y +1 >= len(lines) or lines[y+1][x] == '#':
-                    return False
-                new_lines[y+1][x] = '#'
-                obj = (x,y+1)
-            case 'left':
-                direction = 'up'
-                if x - 1 < 0 or lines[y][x-1] == '#':
-                    return False
-                new_lines[y][x-1] = '#'
-                obj = (x-1,y)
+    def is_loop(new_lines, y, x, start_y, start_x, direction):
+        traversed = []
         #print('loop for', start_x, start_y, direction)
         while direction != 'done':
             traversed.append((x,y, direction))
@@ -121,36 +92,36 @@ class main:
                 return False
             match direction:
                 case 'up':
-                    if new_lines[y-1][x] == '#':
+                    if new_lines[y-1][x] == '#' or new_lines[y-1][x] == 'O':
                         direction = 'right'
                         continue
                     if (x,y-1, direction) in traversed:
-                        #print(traversed)
-                        return obj
+                        
+                        return True
                     y = y - 1
                 case 'right':
-                    if new_lines[y][x+1] == '#':
+                    if new_lines[y][x+1] == '#' or new_lines[y][x+1] == 'O':
                         direction = 'down'
                         continue
                     if (x+1,y, direction) in traversed:
-                        #print(traversed)
-                        return obj
+                        
+                        return True
                     x = x + 1
                 case 'down':
-                    if new_lines[y+1][x] == '#':
+                    if new_lines[y+1][x] == '#' or new_lines[y+1][x] == 'O':
                         direction = 'left'
                         continue
                     if (x,y+1, direction) in traversed:
-                        #print(traversed)
-                        return obj
+                        
+                        return True
                     y = y + 1
                 case 'left':
-                    if new_lines[y][x-1] == '#':
+                    if new_lines[y][x-1] == '#' or new_lines[y][x-1] == 'O':
                         direction = 'up'
                         continue
                     if (x-1,y, direction) in traversed:
-                        #print(traversed)
-                        return obj
+                        
+                        return True
                     x = x - 1
             
         return False
