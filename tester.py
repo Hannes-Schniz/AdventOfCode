@@ -13,10 +13,10 @@ def getInput(max):
         userInput = int(userInput)
         if userInput >= max:
             print("Please enter a valid input")
-            return getInput()
+            return getInput(max)
     except:
         print("Please enter a valid input")
-        return getInput()
+        return getInput(max)
     return userInput
 
 
