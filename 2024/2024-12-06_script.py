@@ -13,8 +13,8 @@ class main:
         for y in range(len(lines)):
             for x in range(len(lines[y])):
                 print('running position', step)
+                step += 1
                 if (x,y) not in route[1]:
-                    step += 1
                     continue
                 new_lines = [[y for y in x] for x in lines]
                 if new_lines[y][x] == '#':
@@ -23,7 +23,6 @@ class main:
                     new_lines[y][x] = 'O'   
                 if main.is_loop(new_lines, guard[1], guard[0], guard[1], guard[0], 'up'):
                     solution += 1
-                step += 1
         return solution
     
     def traverse(lines):
