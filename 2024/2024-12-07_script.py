@@ -9,4 +9,8 @@ class main:
         for line in lines:
             temp = lines.split(': ')
             curr = [int(temp[0])]
+            for num in temp[1].split(' '):
+                curr.append(int(num))
+            parsed.append(curr)
+        return parsed
             
