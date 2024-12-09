@@ -1,11 +1,11 @@
 class main:
     def solutionOne(lines):
-        lines = lines[0].strip()
-        blocks = main.parse(lines)
-        map = main.buildMap(blocks)
-        compressed = main.compress(map)
-        return main.calcHash(compressed)
+        return main.calcHash(main.compress(main.buildMap(main.parse(lines[0].strip()))))
     def solutionTwo(lines):
+        parsed = main.parse(lines[0].strip())
+        map = main.buildMap(parsed)
+        solution = main.compressBlocks(map)
+        print(''.join([str(x) for x in solution]))
         return ''
     
     
@@ -68,4 +68,49 @@ class main:
             idx += 1
             
         return map
+    
+    def findSpace(map):
+        end = 0
+        start = -1
+        for pos in range(len(map)):
+            if map[pos] == '.' and start == -1:
+                start = pos
+            if start != -1 and map[pos] != '.':
+                end = pos -1
+                break
+        return (start,end)
+    
+    #toReplace: (start, end) of range that has to be replaced
+    #replacee: Array of indexes of the map where the numbers filling the spots are located
+    def replace(map,toReplace , replacee ):
+        count = 0
+        for i in range(toReplace[0], toReplace[1]):
+            if count >= len(replacee):
+                break
+            map[i] = map[replacee[count]]
+            map[replacee[count]] = '.'
+            count += 1
+        return map
+    
+    def compressBlocks(map):
+        blocked = []
+        for i in range(len(map)):
+            if not map[i] == '.':
+                blocked.append((i,map.count(map[i])))
+        blocked = sorted(blocked, reverse=True)
+        currSpace = main.findSpace(map)
+        for pos in sorted(range(len(map)-1), reverse=True):
+            if not map[pos] == '.':
+                block = [x for x in map if x == map[pos]]
+                #print(block)
+                print(currSpace)
+                if len(block) > (currSpace[1] - currSpace[0] + 1):
+                    pos -= len(block)
+                    continue
+                map = main.replace(map, currSpace, range(pos, pos+len(block)))
+                currSpace = main.findSpace(map)
+                pos -= len(block)
+        return map
+                        
+                
         
