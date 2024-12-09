@@ -14,7 +14,7 @@ class main:
             for x in range(len(lines[y])):
                 print('running position', step)
                 step += 1
-                if (x,y) not in route[1]:
+                if (x,y) not in route:
                     continue
                 new_lines = [[y for y in x] for x in lines]
                 if new_lines[y][x] == '#':
