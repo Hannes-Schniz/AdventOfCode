@@ -4,10 +4,23 @@ class main:
     def solutionTwo(lines):
         parsed = main.parse(lines[0].strip())
         map = main.buildMap(parsed)
-        solution = main.compressBlocks(map)
-        print(''.join([str(x) for x in solution]))
-        return ''
+        blockMap = main.parseBlocks(map)
+        solution = main.compressBlocks(blockMap)
+        return main.calcHashTwo(solution)
     
+    def calcHashTwo(map):
+        solution = 0
+        count = 0
+        for element in map:
+            if len(element) == 0:
+                continue
+            for pos in element:
+                if pos == '.':
+                    count += 1
+                    continue
+                solution += count*pos
+                count += 1
+        return solution
     
     def calcHash(map):
         solution = 0
@@ -22,6 +35,18 @@ class main:
         blocks = []
         for char in line:
             blocks.append(int(char))
+        return blocks
+    
+    def parseBlocks(line):
+        blocks = []
+        curr = []
+        for char in line:
+            if char not in curr and len(curr) != 0:
+               blocks.append(curr)
+               curr = [char]
+               continue
+            curr.append(char)
+        blocks.append(curr)
         return blocks
     
     
@@ -69,48 +94,73 @@ class main:
             
         return map
     
-    def findSpace(map):
+    def findSpaces(map):
         end = 0
         start = -1
+        positions = []
         for pos in range(len(map)):
             if map[pos] == '.' and start == -1:
                 start = pos
             if start != -1 and map[pos] != '.':
                 end = pos -1
-                break
-        return (start,end)
+                positions.append((start, end))
+                start = -1
+        return positions
     
-    #toReplace: (start, end) of range that has to be replaced
-    #replacee: Array of indexes of the map where the numbers filling the spots are located
     def replace(map,toReplace , replacee ):
-        count = 0
-        for i in range(toReplace[0], toReplace[1]):
-            if count >= len(replacee):
-                break
-            map[i] = map[replacee[count]]
-            map[replacee[count]] = '.'
-            count += 1
-        return map
+        #print(map[toReplace], map[replacee])
+        delta = 0
+        newElement = []
+        front = False
+        back = False
+        for e in map[replacee]:
+            newElement.append('.')
+        map[toReplace] = map[toReplace][len(map[replacee]):]
+        if len(map[toReplace]) == 0:
+            delta += 1     
+        map.insert(toReplace, map[replacee])
+        map[replacee+1] = newElement
+        #print(map)
+        delta -= 1
+        if len(map[replacee]) > 0 and map[replacee][0] == '.':
+            map[replacee+1] += map[replacee]
+            front = True
+        if replacee +2 < len(map) and map[replacee+2][0] == '.' :
+            map[replacee+1] += map[replacee+2]
+            back = True
+        if front:
+            del map[replacee]
+            delta += 1
+        if back:
+            del map[replacee+1]
+            delta += 1
+        return ([x for x in map if x != []], delta)
     
-    def compressBlocks(map):
-        blocked = []
-        for i in range(len(map)):
-            if not map[i] == '.':
-                blocked.append((i,map.count(map[i])))
-        blocked = sorted(blocked, reverse=True)
-        currSpace = main.findSpace(map)
-        for pos in sorted(range(len(map)-1), reverse=True):
-            if not map[pos] == '.':
-                block = [x for x in map if x == map[pos]]
-                #print(block)
-                print(currSpace)
-                if len(block) > (currSpace[1] - currSpace[0] + 1):
-                    pos -= len(block)
+    def compressBlocks(blockMap):
+        #newMap = blockMap
+        
+        i = len(blockMap) -1
+        while i > 0:
+            j = 0
+            print(blockMap)
+            if blockMap[i][0] == '.':
+                i-= 1
+                continue
+            while i > j:
+                if blockMap [j][0] != '.':
+                    j += 1
                     continue
-                map = main.replace(map, currSpace, range(pos, pos+len(block)))
-                currSpace = main.findSpace(map)
-                pos -= len(block)
-        return map
+                #print(blockMap[i], blockMap[j])
+                if len(blockMap[i]) <= len(blockMap[j]) and blockMap[j][0] == '.' and blockMap[i][0] != '.':
+                    temp = main.replace(blockMap, j, i) 
+                    blockMap = temp[0]
+                    i -= temp[1]
+                    break
+                j += 1
+            i -= 1
+        return blockMap
+    
+                
                         
                 
         
