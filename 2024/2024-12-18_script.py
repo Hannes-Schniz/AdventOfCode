@@ -3,10 +3,10 @@ class main:
         boardSize = 70
         parsed = main.parse(lines,1024)
         board = main.buildBoard(parsed, boardSize+1)
-        main.printBoard(board)
+        #main.printBoard(board)
         path = main.bfs(board,(0,0),(boardSize,boardSize))
-        pathmap = main.buildPath(board,path)
-        main.printBoard(pathmap)
+        #pathmap = main.buildPath(board,path)
+        #main.printBoard(pathmap)
         return len(path)-1
     def solutionTwo(lines):
         boardSize = 70
