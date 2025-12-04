@@ -1,7 +1,3 @@
-import re
-from tokenize import String
-
-
 class main:
     def solutionOne(lines):
         erg = 0
