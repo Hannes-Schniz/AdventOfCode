@@ -118,9 +118,11 @@ def loadInput(inputPath, script):
 key = 0
 
 start = time.time()
-print(selectScript[2].solutionOne(loadInput(selectScript[1], selectScript[0])))
+solution = selectScript[2].solutionOne(loadInput(selectScript[1], selectScript[0]))
 end = time.time()
+print(f"{solution}\r")
 print(f"Runtime (s) -> {round(end - start, 10)}")
+
 start = time.time()
 print(selectScript[2].solutionTwo(loadInput(selectScript[1], selectScript[0])))
 end = time.time()
