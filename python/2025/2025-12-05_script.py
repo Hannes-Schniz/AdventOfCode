@@ -2,7 +2,7 @@ from operator import itemgetter
 
 
 class main:
-    def solutionOne(lines):
+    def solutionOne(self, lines):
         erg = 0
         idx = 0
         line = lines[idx].strip()
@@ -25,7 +25,7 @@ class main:
             number = int(lines[idx].strip())
         return erg
 
-    def recTwo(ranges):
+    def recTwo(self, ranges):
         changed = False
         newRanges = []
         skip = False
@@ -62,10 +62,10 @@ class main:
         if not changed:
             newRanges.append(ranges[len(ranges) - 1])
         if newRanges != ranges:
-            return main.recTwo(newRanges)
+            return self.recTwo(newRanges)
         return newRanges
 
-    def solutionTwo(lines):
+    def solutionTwo(self, lines):
         erg = 0
         idx = 0
         line = lines[idx].strip()
@@ -75,7 +75,7 @@ class main:
             idx += 1
             line = lines[idx].strip()
         ranges = sorted(ranges, key=itemgetter(0))
-        ranges = main.recTwo(ranges)
+        ranges = self.recTwo(ranges)
         for element in ranges:
             erg += element[1] - element[0] + 1
         return erg

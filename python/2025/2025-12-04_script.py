@@ -1,5 +1,5 @@
 class main:
-    def solutionOne(lines):
+    def solutionOne(self, lines):
         erg = 0
         map = []
         for line in lines:
@@ -38,7 +38,7 @@ class main:
 
         return erg
 
-    def recTwo(erg, map):
+    def recTwo(self, erg, map):
         newErg = erg
         newMap = map
         for i in range(len(map)):
@@ -75,12 +75,12 @@ class main:
         if newErg == erg:
             return erg
         else:
-            return main.recTwo(erg, newMap)
+            return self.recTwo(erg, newMap)
 
-    def solutionTwo(lines):
+    def solutionTwo(self, lines):
         map = []
         for line in lines:
             line = line.strip()
             map.append([x for x in line])
 
-        return main.recTwo(0, map)
+        return self.recTwo(0, map)

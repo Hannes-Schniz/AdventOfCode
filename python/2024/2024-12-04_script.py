@@ -1,19 +1,21 @@
 import re
+
+
 class main:
-    def solutionTwo(lines):
-        cleanLines =[]
+    def solutionTwo(self, lines):
+        cleanLines = []
         solution = 0
         for line in lines:
             cleanLines.append(line.strip())
-        for i in range(1, len(cleanLines)-1):
-            for j in range(1, len(cleanLines[i])-1):
-                if lines[i][j] != 'A':
+        for i in range(1, len(cleanLines) - 1):
+            for j in range(1, len(cleanLines[i]) - 1):
+                if lines[i][j] != "A":
                     continue
-                solution += main.getX(lines, i, j)
+                solution += self.getX(lines, i, j)
         return solution
-    
-    def solutionOne(lines):
-        cleanLines =[]
+
+    def solutionOne(self, lines):
+        cleanLines = []
         for line in lines:
             cleanLines.append(line.strip())
         max_col = len(cleanLines[0])
@@ -28,25 +30,30 @@ class main:
             for y in range(max_row):
                 cols[x].append(lines[y][x])
                 rows[y].append(lines[y][x])
-                fdiag[x+y].append(lines[y][x])
-                bdiag[x-y-min_bdiag].append(lines[y][x])
-        return main.find_XMAS(cols) + main.find_XMAS(rows) + main.find_XMAS(fdiag) + main.find_XMAS(bdiag)
-        
-    def find_XMAS(lines):
+                fdiag[x + y].append(lines[y][x])
+                bdiag[x - y - min_bdiag].append(lines[y][x])
+        return (
+            self.find_XMAS(cols)
+            + self.find_XMAS(rows)
+            + self.find_XMAS(fdiag)
+            + self.find_XMAS(bdiag)
+        )
+
+    def find_XMAS(self, lines):
         solution = 0
         for line in lines:
-            curr = ''.join(line)
-            solution += len(re.findall('XMAS', curr))
-            solution += len(re.findall('SAMX', curr))   
+            curr = "".join(line)
+            solution += len(re.findall("XMAS", curr))
+            solution += len(re.findall("SAMX", curr))
         return solution
-    
-    def getX(lines, i, j):
+
+    def getX(self, lines, i, j):
         solution = 0
-        lt = ''.join(sorted([lines[i+1][j+1], lines[i-1][j-1]])) 
-        rt = ''.join(sorted([lines[i+1][j-1], lines[i-1][j+1]]))
-        solution += len(re.findall('MS', lt))
-        solution += len(re.findall('MS', rt)) 
+        lt = "".join(sorted([lines[i + 1][j + 1], lines[i - 1][j - 1]]))
+        rt = "".join(sorted([lines[i + 1][j - 1], lines[i - 1][j + 1]]))
+        solution += len(re.findall("MS", lt))
+        solution += len(re.findall("MS", rt))
         if solution == 2:
             return 1
-        return 0        
-            
+        return 0
+

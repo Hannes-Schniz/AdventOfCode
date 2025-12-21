@@ -1,6 +1,7 @@
 class main:
-    def solutionOne(lines):
+    def solutionOne(self, lines):
         erg = 0
+        prefix = ""
         for line in lines:
             line = line.strip()
             numbers = {
@@ -40,7 +41,7 @@ class main:
 
         return erg
 
-    def solutionTwo(lines):
+    def solutionTwo(self, lines):
         erg = 0
         for line in lines:
             line = line.strip()
@@ -52,7 +53,7 @@ class main:
                 step += 1
                 smaller = False
                 for j in [x for x in range(len(num)) if x >= step - delSteps]:
-                    if smaller == True:
+                    if smaller:
                         num[j] = 0
                         continue
 

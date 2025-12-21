@@ -1,5 +1,5 @@
 class main:
-    def solutionOne(lines):
+    def solutionOne(self, lines):
         start = 50
         count = 0
         for line in lines:
@@ -13,7 +13,7 @@ class main:
                 count += 1
         return count
 
-    def solutionTwo(lines):
+    def solutionTwo(self, lines):
         start = 50
         count = 0
         for line in lines:

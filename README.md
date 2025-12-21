@@ -1,6 +1,6 @@
-# Advent fo code
+# Advent of code
 
-This is an assortment of my solutions of the advent of code in different langauages.
+This is an assortment of my solutions of the advent of code in different languages.
 
 
 

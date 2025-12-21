@@ -1,9 +1,5 @@
-import threading
-from ast import arg
-
-
 class main:
-    def solutionOne(lines):
+    def solutionOne(self, lines):
         erg = -1
         cols = []
         for pos in range(len(lines[0])):
@@ -31,7 +27,7 @@ class main:
             cols = sorted(cols)
         return erg + 1
 
-    def validate(curr, vecs):
+    def validate(self, curr, vecs):
         for i in reversed(range(0, curr[1])):
             if (curr[0] - 1, i) in vecs:
                 return True
@@ -39,10 +35,10 @@ class main:
                 return True
             if (curr[0], i) in vecs:
                 break
-        print((curr[0], i))
+            print((curr[0], i))
         return False
 
-    def solutionTwo(lines):
+    def solutionTwo(self, lines):
         erg = -1
         vecs = []
         start = 0
@@ -55,7 +51,7 @@ class main:
                 if lines[line][pos] == "^":
                     vecs.append((pos, line))
         oldVecs = vecs.copy()
-        vecs = [x for x in vecs if main.validate(x, vecs) or x == (start, 0)]
+        vecs = [x for x in vecs if self.validate(x, vecs) or x == (start, 0)]
         print([x for x in vecs if x not in oldVecs])
         lastPos = [(start, 0)]
         streams = 0

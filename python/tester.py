@@ -93,7 +93,7 @@ def getScript(selectedYear, BASE_PATH):
         PATH_SELECTED_INPUT = PATH_TESTS
 
     module = importlib.import_module(selectedYear + "." + selectedScript.split(".")[0])
-    my_class = getattr(module, "main")
+    my_class = getattr(module, "main")()
 
     return (selectedScript, PATH_SELECTED_INPUT, my_class)
 

@@ -1,8 +1,5 @@
-from statistics import LinearRegression
-
-
 class main:
-    def solutionOne(lines):
+    def solutionOne(self, lines):
         erg = 0
         map = [[int(x)] for x in lines[0].strip().split()]
 
@@ -24,7 +21,7 @@ class main:
                 erg += temp
         return erg
 
-    def solutionTwo(lines):
+    def solutionTwo(self, lines):
         erg = 0
         numbers = []
         pos = 0

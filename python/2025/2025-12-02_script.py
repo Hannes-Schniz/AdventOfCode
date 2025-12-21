@@ -1,8 +1,5 @@
-import re
-
-
 class main:
-    def solutionOne(lines):
+    def solutionOne(self, lines):
         ranges = [x for x in lines[0].split(",")]
         erg = 0
         for rng in ranges:
@@ -18,7 +15,7 @@ class main:
 
         return erg
 
-    def solutionTwo(lines):
+    def solutionTwo(self, lines):
         ranges = [x for x in lines[0].split(",")]
         erg = 0
         found = []
